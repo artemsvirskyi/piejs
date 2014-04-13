@@ -1,54 +1,82 @@
 (function(){
 	"use strict";
 
-	var degToRad = Math.PI / 180;
-
-	function Pie(canvas, options){
-		this.canvas = canvas;
-		this.context = this.canvas.getContext("2d");
-		this.start = -90;
-		this.animationInterval = 20;
-		if(options){
-			Object.keys(options).forEach(function(option){
-				this[option] = options[option];
-			}, this);
-		}
-		this.current = this.start = this.start * degToRad;
-		// Pie center coordinates and radius. All are the same values.
-		this.xyr = this.canvas.width / 2;
-		this.onstep = function(){};
-		this.onfinalstep = function(){};
+	function toRad(deg){
+		return deg * Math.PI / 180;
 	}
-	Pie.prototype.animate = function(end, duration){
-		var that = this, stepIndex = 0, length, step,
-			stepsNumber = Math.floor(duration / this.animationInterval);
-		end = end * degToRad;
-		length = end - this.current;
-		step = length / stepsNumber;
-		this.counterclockwise = (length < 0);
-		this.animation = setInterval(function(){
-			stepIndex++;
-			that.current += step;
-			that.redraw();
-			that.onstep();
-			if(stepIndex === stepsNumber){
-				that.current = end;
-				that.onfinalstep();
-				clearInterval(that.animation);
-			}
-		}, this.animationInterval);
+
+	function Pie(element){
+		this.element = element;
+
+		this.radius = element.clientWidth;
+
+		this.canvas = this.appendCanvas();
+		this.context = this.canvas.getContext("2d");
+	}
+
+	Pie.prototype.appendCanvas = function(){
+		var canvas = document.createElement("canvas");
+
+		canvas.width = this.radius;
+		canvas.height = this.radius;
+
+		return this.element.appendChild(canvas);
 	};
-	Pie.prototype.redraw = function(){
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.context.beginPath();
-		this.context.moveTo(this.xyr, this.xyr);
-	    this.context.arc(this.xyr, this.xyr, this.xyr, this.start, this.current, this.counterclockwise);
-		this.context.fill();
+
+	Pie.prototype.set = function(data, options){
+		this.setData(data);
+		this.setOptions(options);
 	};
-	Pie.prototype.reset = function(){
-		clearInterval(this.animation);
-		this.current = this.start;
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+	Pie.prototype.setData = function(data){
+		//
 	};
+
+	Pie.prototype.setOptions = function(options){
+		// default options:
+
+		this.type = "pie"; 	 // pie || daughnut
+ 		this.duration = 500; // 500 ms
+ 		this.start = 0; 	 // 0 degrees
+
+ 		utils.mixin(this, options);
+
+		this.start = toRad(this.start - 90);
+
+ 		this.draw = this.drawPie;
+
+		if(this.type === "daughnut"){
+			this.context.borderWidth = this.borderWidth || Math.floor(this.radius / 3);
+			this.draw = this.drawDaughnut;
+		}
+	};
+
+	Pie.prototype.animate = function(){
+
+	};
+
 	window.Pie = Pie;
 })();
+
+/*function mapToArray(map){
+	console.log(map);
+	return Object.keys(map).map(function(id){
+		console.log(id);
+		var item = map[id],
+			obj = Object.create(item);
+		obj.id = id;
+		return obj;
+	});
+};*/
+
+	function mixin(target, source, args){
+		var keys = args instanceof Array ? args : Object.keys(source);
+
+		keys.filter(function(key){
+			return !!source[key];
+		}).forEach(function(key){
+				target[key] = source[key];
+			});
+
+		return target;
+	};

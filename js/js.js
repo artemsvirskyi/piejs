@@ -1,10 +1,20 @@
 window.addEventListener("load", function(){
 	"use strict";
 
-	var canvas = document.getElementsByTagName("canvas")[0],
-		pie = new Pie(canvas);
-		
-	pie.context.fillStyle = "red";
-	pie.animate(90, 1000);
+	var data = [
+		{
+			color: "blue",
+			value: 100
+		},
+		{
+			color: "red",
+			value: 200
+		}
+	],
+	pieElement = document.getElementsByClassName("pie")[0],
+	pie = new Pie(pieElement);
 
+	pie.set(data, {a: 1, b: 2});
+
+	pie.animate();
 });
