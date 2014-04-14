@@ -4,17 +4,31 @@ window.addEventListener("load", function(){
 	var data = [
 		{
 			color: "blue",
-			value: 100
+			value: 70
 		},
 		{
 			color: "red",
-			value: 200
+			value: 30
+		},
+		{
+			color: "green",
+			value: 50
+		},
+		{
+			color: "black",
+			value: 30
+		},
+		{
+			color: "orange",
+			value: 10
 		}
 	],
 	pieElement = document.getElementsByClassName("pie")[0],
 	pie = new Pie(pieElement);
 
-	pie.set(data, {a: 1, b: 2});
+	pie.set(data);
 
-	pie.animate();
+	setTimeout(function(){
+		pie.animate();
+	}, 1000);
 });
